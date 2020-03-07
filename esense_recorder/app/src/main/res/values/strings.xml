@@ -5,4 +5,8 @@
     <string name="activity_main_connect_button_text">Connect eSense device</string>
     <string name="activity_main_disconnect_button_text">Disconnect</string>
     <string name="activity_main_connection_state_heading_text">Connection state:</string>
+
+    <string name="toast_message_bt_activation_rejected">Bluetooth activation rejected.</string>
+    <string name="toast_message_bt_activation_failed">Bluetooth activation failed!</string>
+    <string name="toast_message_bt_ready">Bluetooth ready</string>
 </resources>
