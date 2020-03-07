@@ -1,0 +1,3 @@
+rootProject.name='eSense-Recorder'
+include ':app'
+include ':esenselib'

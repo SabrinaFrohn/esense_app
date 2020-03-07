@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">eSense-Recorder</string>
+
+    <string name="activity_main_connection_section_heading_text">Connection</string>
+    <string name="activity_main_connect_button_text">Connect eSense device</string>
+    <string name="activity_main_disconnect_button_text">Disconnect</string>
+    <string name="activity_main_connection_state_heading_text">Connection state:</string>
+</resources>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/horizontal_margin"
+            android:paddingLeft="@dimen/horizontal_margin"
+            android:paddingRight="@dimen/vertical_margin"
+            android:paddingTop="@dimen/vertical_margin"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/colorPrimary">
+
+            <!-- Title -->
+            <TextView
+                android:text="@string/app_name"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textAppearance="@android:style/TextAppearance.Large"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <!-- Logo -->
+            <!--
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_feelspace_logo"/>
+            -->
+        </LinearLayout>
+
+        <!-- Content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/horizontal_margin"
+                android:layout_marginLeft="@dimen/horizontal_margin"
+                android:layout_marginRight="@dimen/vertical_margin"
+                android:layout_marginTop="@dimen/vertical_margin"
+                android:orientation="vertical">
+
+                <!-- Section: connection -->
+                <TextView
+                    android:text="@string/activity_main_connection_section_heading_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading"
+                    android:textStyle="bold" />
+
+                <!-- Search and connect button -->
+                <Button
+                    android:id="@+id/activity_main_connect_button"
+                    android:text="@string/activity_main_connect_button_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin" />
+
+                <!-- Disconnect button -->
+                <Button
+                    android:id="@+id/activity_main_disconnect_button"
+                    android:text="@string/activity_main_disconnect_button_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin" />
+
+                <!-- Connection state label -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_connection_state_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_connection_status_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Separator -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/horizontal_margin"
+                    android:layout_marginBottom="@dimen/horizontal_margin"
+                    android:background="@android:color/darker_gray" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        </LinearLayout>
+
+</LinearLayout>
