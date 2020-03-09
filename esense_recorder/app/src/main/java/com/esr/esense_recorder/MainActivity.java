@@ -28,6 +28,13 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     // UI components
     private TextView connectionStateLabel;
+    private TextView gyroRangeLabel;
+    private TextView gyroLPFLabel;
+    private TextView accRangeLabel;
+    private TextView accLPFLabel;
+
+    // Format for label
+
 
     // eSense controller
     ESenseController eSenseController = new ESenseController();
@@ -39,6 +46,10 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
         // References to UI components
         connectionStateLabel = findViewById(R.id.activity_main_connection_state_label);
+        gyroRangeLabel = findViewById(R.id.activity_main_gyro_range_label);
+        gyroLPFLabel = findViewById(R.id.activity_main_gyro_lpf_label);
+        accRangeLabel = findViewById(R.id.activity_main_acc_range_label);
+        accLPFLabel = findViewById(R.id.activity_main_acc_lpf_label);
 
         // *** UI event handlers ***
 
@@ -154,6 +165,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
      */
     private void updateUI() {
         updateConnectionPanel();
+        updateIMUConfigurationPanel();
     }
 
     /**
@@ -165,6 +177,113 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
             public void run() {
                 if (connectionStateLabel != null) {
                     connectionStateLabel.setText(eSenseController.getState().toString());
+                }
+            }
+        });
+    }
+
+    /**
+     * Updates the IMU configuration panel.
+     */
+    private void updateIMUConfigurationPanel() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (gyroRangeLabel == null || gyroLPFLabel == null ||
+                        accRangeLabel == null || accLPFLabel == null) {
+                    return;
+                }
+                ESenseConfig config = eSenseController.getESenseConfig();
+                if (config == null ||
+                        eSenseController.getState() != ESenseConnectionState.CONNECTED) {
+                    gyroRangeLabel.setText(getString(R.string.imu_no_value_text));
+                    gyroLPFLabel.setText(getString(R.string.imu_no_value_text));
+                    accRangeLabel.setText(getString(R.string.imu_no_value_text));
+                    accLPFLabel.setText(getString(R.string.imu_no_value_text));
+                } else {
+                    switch (config.getGyroRange()) {
+                        case DEG_250:
+                            gyroRangeLabel.setText(getString(R.string.gyro_range_250));
+                            break;
+                        case DEG_500:
+                            gyroRangeLabel.setText(getString(R.string.gyro_range_500));
+                            break;
+                        case DEG_1000:
+                            gyroRangeLabel.setText(getString(R.string.gyro_range_1000));
+                            break;
+                        case DEG_2000:
+                            gyroRangeLabel.setText(getString(R.string.gyro_range_2000));
+                            break;
+                    }
+                    switch (config.getGyroLPF()) {
+                        case BW_250:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_250));
+                            break;
+                        case BW_184:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_184));
+                            break;
+                        case BW_92:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_92));
+                            break;
+                        case BW_41:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_41));
+                            break;
+                        case BW_20:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_20));
+                            break;
+                        case BW_10:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_10));
+                            break;
+                        case BW_5:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_5));
+                            break;
+                        case BW_3600:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_3600));
+                            break;
+                        case DISABLED:
+                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_disabled));
+                            break;
+                    }
+                    switch (config.getAccRange()) {
+                        case G_2:
+                            accRangeLabel.setText(getString(R.string.acc_range_2G));
+                            break;
+                        case G_4:
+                            accRangeLabel.setText(getString(R.string.acc_range_4G));
+                            break;
+                        case G_8:
+                            accRangeLabel.setText(getString(R.string.acc_range_8G));
+                            break;
+                        case G_16:
+                            accRangeLabel.setText(getString(R.string.acc_range_16G));
+                            break;
+                    }
+                    switch (config.getAccLPF()) {
+                        case BW_460:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_460));
+                            break;
+                        case BW_184:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_184));
+                            break;
+                        case BW_92:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_92));
+                            break;
+                        case BW_41:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_41));
+                            break;
+                        case BW_20:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_20));
+                            break;
+                        case BW_10:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_10));
+                            break;
+                        case BW_5:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_5));
+                            break;
+                        case DISABLED:
+                            accLPFLabel.setText(getString(R.string.acc_lpf_disabled));
+                            break;
+                    }
                 }
             }
         });
@@ -184,6 +303,9 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onConnected(ESenseManager manager) {
+        // Read IMU config
+        eSenseController.readESenseConfig();
+        // Show toast and update UI
         showToast(getString(R.string.toast_message_device_connected));
         updateUI();
     }
@@ -196,27 +318,30 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onBatteryRead(double voltage) {
-        // TODO
+        // No monitoring of the battery voltage
     }
 
     @Override
     public void onButtonEventChanged(boolean pressed) {
-        // TODO
+        showToast(getString(R.string.toast_message_esense_button_pressed));
     }
 
     @Override
-    public void onAdvertisementAndConnectionIntervalRead(int minAdvertisementInterval, int maxAdvertisementInterval, int minConnectionInterval, int maxConnectionInterval) {
+    public void onAdvertisementAndConnectionIntervalRead(int minAdvertisementInterval,
+                                                         int maxAdvertisementInterval,
+                                                         int minConnectionInterval,
+                                                         int maxConnectionInterval) {
         // TODO
     }
 
     @Override
     public void onDeviceNameRead(String deviceName) {
-        // TODO
+        // Nothing to do
     }
 
     @Override
     public void onSensorConfigRead(ESenseConfig config) {
-        // TODO
+        updateIMUConfigurationPanel();
     }
 
     @Override

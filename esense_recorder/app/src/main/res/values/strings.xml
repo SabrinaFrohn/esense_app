@@ -5,6 +5,39 @@
     <string name="activity_main_connect_button_text">Connect eSense device</string>
     <string name="activity_main_disconnect_button_text">Disconnect</string>
     <string name="activity_main_connection_state_heading_text">Connection state:</string>
+    <string name="activity_main_imu_monitor_section_heading_text">IMU monitor</string>
+    <string name="activity_main_imu_configuration_section_heading_text">IMU configuration</string>
+    <string name="activity_main_gyro_range_heading_text">Gyro. range:</string>
+    <string name="activity_main_gyro_lpf_heading_text">Gyro. LPF:</string>
+    <string name="activity_main_acc_range_heading_text">Acc. range:</string>
+    <string name="activity_main_acc_lpf_heading_text">Acc. LPF:</string>
+
+    <string name="imu_no_value_text">-</string>
+    <string name="gyro_range_250">250 °.s-1</string>
+    <string name="gyro_range_500">500 °.s-1</string>
+    <string name="gyro_range_1000">1000 °.s-1</string>
+    <string name="gyro_range_2000">2000 °.s-1</string>
+    <string name="gyro_lpf_250">250 Hz</string>
+    <string name="gyro_lpf_184">184 Hz</string>
+    <string name="gyro_lpf_92">92 Hz</string>
+    <string name="gyro_lpf_41">41 Hz</string>
+    <string name="gyro_lpf_20">20 Hz</string>
+    <string name="gyro_lpf_10">10 Hz</string>
+    <string name="gyro_lpf_5">5 Hz</string>
+    <string name="gyro_lpf_3600">3600 Hz</string>
+    <string name="gyro_lpf_disabled">Disabled</string>
+    <string name="acc_range_2G">2 g</string>
+    <string name="acc_range_4G">4 g</string>
+    <string name="acc_range_8G">8 g</string>
+    <string name="acc_range_16G">16 g</string>
+    <string name="acc_lpf_460">460 Hz</string>
+    <string name="acc_lpf_184">184 Hz</string>
+    <string name="acc_lpf_92">92 Hz</string>
+    <string name="acc_lpf_41">41 Hz</string>
+    <string name="acc_lpf_20">20 Hz</string>
+    <string name="acc_lpf_10">10 Hz</string>
+    <string name="acc_lpf_5">5 Hz</string>
+    <string name="acc_lpf_disabled">Disabled</string>
 
     <string name="toast_message_bt_activation_rejected">Bluetooth activation rejected.</string>
     <string name="toast_message_bt_activation_failed">Bluetooth activation failed!</string>
@@ -15,6 +48,7 @@
     <string name="toast_message_device_disconnected">Device disconnected.</string>
     <string name="toast_message_no_paired_device">No paired device start connection!</string>
     <string name="toast_message_device_name_error">No device selected for the connection!</string>
+    <string name="toast_message_esense_button_pressed">eSense button pressed.</string>
 
     <string name="dialog_bt_not_supported_message">Bluetooth low-energy is required.</string>
     <string name="dialog_bt_not_supported_ok">Cancel</string>

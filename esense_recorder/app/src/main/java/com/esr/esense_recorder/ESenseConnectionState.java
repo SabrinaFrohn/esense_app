@@ -6,8 +6,20 @@ import androidx.annotation.NonNull;
  * Enumeration of the connection states.
  */
 public enum ESenseConnectionState {
+
+    /**
+     * Not connected
+     */
     DISCONNECTED(),
+
+    /**
+     * Scanning or connecting
+     */
     CONNECTING(),
+
+    /**
+     * Connected
+     */
     CONNECTED();
 
     @NonNull

@@ -37,7 +37,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_feelspace_logo"/>
+                android:src="@drawable/ic_logo"/>
             -->
         </LinearLayout>
 
@@ -103,6 +103,132 @@
                         android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="@color/colorLabel" />
                 </LinearLayout>
+
+                <!-- Separator -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/horizontal_margin"
+                    android:layout_marginBottom="@dimen/horizontal_margin"
+                    android:background="@android:color/darker_gray" />
+
+                <!-- Section: IMU configuration -->
+                <TextView
+                    android:text="@string/activity_main_imu_configuration_section_heading_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading"
+                    android:textStyle="bold" />
+
+                <!-- Gyroscope range -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_gyro_range_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_gyro_range_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Gyroscope LPF -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_gyro_lpf_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_gyro_lpf_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Accelerometer range -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_acc_range_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_acc_range_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Accelerometer LPF -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_acc_lpf_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_acc_lpf_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Separator -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/horizontal_margin"
+                    android:layout_marginBottom="@dimen/horizontal_margin"
+                    android:background="@android:color/darker_gray" />
+
+                <!-- Section: IMU monitor -->
+                <TextView
+                    android:text="@string/activity_main_imu_monitor_section_heading_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading"
+                    android:textStyle="bold" />
+
+                <!-- TODO -->
 
                 <!-- Separator -->
                 <View

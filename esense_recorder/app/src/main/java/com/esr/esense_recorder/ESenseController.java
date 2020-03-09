@@ -18,7 +18,7 @@ import io.esense.esenselib.ESenseSensorListener;
  * <ul>
  *     <li>Multiple listeners,</li>
  *     <li>Instantiation without argument (in particular the context and name of the device),</li>
- *     <li>Additional logic.</li>
+ *     <li>Storing last known values.</li>
  * </ul>
  */
 public class ESenseController implements ESenseConnectionListener, ESenseEventListener,
@@ -36,6 +36,14 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     // List of listeners
     private ArrayList<ESenseListener> listeners = new ArrayList<>();
 
+    // Last known configuration
+    private ESenseConfig eSenseConfig;
+
+    /**
+     * Adds a listener to eSense events.
+     *
+     * @param listener the listener to add.
+     */
     public void addListener(ESenseListener listener) {
         synchronized (this) {
             if (listener != null && !listeners.contains(listener)) {
@@ -44,17 +52,55 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         }
     }
 
+    /**
+     * Removes a listener.
+     *
+     * @param listener the listener to remove.
+     */
     public void removeListener(ESenseListener listener) {
         synchronized (this) {
             listeners.remove(listener);
         }
     }
 
+    /**
+     * Returns the connection state of the eSense device.
+     *
+     * @return the connection state.
+     */
     public ESenseConnectionState getState() {
         return state;
     }
 
+    /**
+     * Reads asynchronously the eSense sensor configuration.
+     *
+     * @return <code>true</code> if the request hqs been sent.
+     */
+    public boolean readESenseConfig() {
+        if (eSenseManager != null && state == ESenseConnectionState.CONNECTED) {
+            return eSenseManager.getSensorConfig();
+        }
+        return false;
+    }
+
+    /**
+     * Returns the last known eSense configuration.
+     *
+     * @return the last known eSense configuration.
+     */
+    public ESenseConfig getESenseConfig() {
+        return eSenseConfig;
+    }
+
+    /**
+     * Connects a eSense device.
+     *
+     * @param name the name of the device.
+     * @param context the application context to establish the connection.
+     */
     public void connect(String name, Context context) {
+        clearStoredSensorData();
         if (eSenseManager != null) {
             eSenseManager.disconnect();
         }
@@ -76,12 +122,24 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         eSenseManager.connect(CONNECTION_TIMEOUT_MS);
     }
 
+    /**
+     * Disconnects the eSense device.
+     */
     public void disconnect() {
+        clearStoredSensorData();
         if (eSenseManager != null &&
                 state != ESenseConnectionState.DISCONNECTED) {
             state = ESenseConnectionState.DISCONNECTED;
             eSenseManager.disconnect();
         }
+    }
+
+    /**
+     * Clears the sensor data.
+     */
+    private void clearStoredSensorData() {
+        eSenseConfig = null;
+        // TODO: To be completed
     }
 
     // *** Implementation of the ESenseManager listeners ***
@@ -137,6 +195,7 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     @Override
     public void onDisconnected(ESenseManager manager) {
+        clearStoredSensorData();
         // Set state
         state = ESenseConnectionState.DISCONNECTED;
         // Inform listeners
@@ -222,7 +281,8 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     @Override
     public void onSensorConfigRead(ESenseConfig config) {
-        // TODO
+        // Store data
+        eSenseConfig = config;
         // Inform listeners
         ArrayList<ESenseListener> targets;
         synchronized (this) {
