@@ -25,7 +25,7 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         ESenseSensorListener {
 
     // Connection timeout in seconds
-    private static final int CONNECTION_TIMEOUT_MS = 5000;
+    private static final int CONNECTION_TIMEOUT_MS = 1500;
 
     // Connection state (including "connecting" state)
     private ESenseConnectionState state = ESenseConnectionState.DISCONNECTED;
@@ -38,6 +38,9 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     // Last known configuration
     private ESenseConfig eSenseConfig;
+
+    // Connected device name
+    private String deviceName;
 
     /**
      * Adds a listener to eSense events.
@@ -94,6 +97,15 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     }
 
     /**
+     * Returns the name of the connected device, or <code>null</code> if not connected.
+     *
+     * @return the name of the connected device.
+     */
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    /**
      * Connects a eSense device.
      *
      * @param name the name of the device.
@@ -104,6 +116,8 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         if (eSenseManager != null) {
             eSenseManager.disconnect();
         }
+        // Keep device name
+        deviceName = name;
         // Set state
         state = ESenseConnectionState.CONNECTING;
         // Notify connection attempt
@@ -130,6 +144,7 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         if (eSenseManager != null &&
                 state != ESenseConnectionState.DISCONNECTED) {
             state = ESenseConnectionState.DISCONNECTED;
+            // Disconnect
             eSenseManager.disconnect();
         }
     }
@@ -139,6 +154,7 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
      */
     private void clearStoredSensorData() {
         eSenseConfig = null;
+        deviceName = null;
         // TODO: To be completed
     }
 
@@ -229,7 +245,6 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     @Override
     public void onButtonEventChanged(boolean pressed) {
-        // TODO
         // Inform listeners
         ArrayList<ESenseListener> targets;
         synchronized (this) {
@@ -248,7 +263,6 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
                                                          int maxAdvertisementInterval,
                                                          int minConnectionInterval,
                                                          int maxConnectionInterval) {
-        // TODO
         // Inform listeners
         ArrayList<ESenseListener> targets;
         synchronized (this) {
@@ -265,7 +279,6 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     @Override
     public void onDeviceNameRead(String deviceName) {
-        // TODO
         // Inform listeners
         ArrayList<ESenseListener> targets;
         synchronized (this) {

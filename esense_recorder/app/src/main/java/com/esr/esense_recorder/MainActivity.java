@@ -32,6 +32,9 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     private TextView gyroLPFLabel;
     private TextView accRangeLabel;
     private TextView accLPFLabel;
+    private Button connectButton;
+    private Button disconnectButton;
+    private Button readConfigButton;
 
     // Format for label
 
@@ -54,7 +57,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         // *** UI event handlers ***
 
         // Connect button
-        Button connectButton = findViewById(R.id.activity_main_connect_button);
+        connectButton = findViewById(R.id.activity_main_connect_button);
         if (connectButton != null) {
             connectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -68,13 +71,26 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         }
 
         // Disconnect button
-        Button disconnectButton = findViewById(R.id.activity_main_disconnect_button);
+        disconnectButton = findViewById(R.id.activity_main_disconnect_button);
         if (disconnectButton != null) {
             disconnectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (eSenseController.getState() != ESenseConnectionState.DISCONNECTED) {
                         eSenseController.disconnect();
+                    }
+                }
+            });
+        }
+
+        // Read IMU config button
+        readConfigButton = findViewById(R.id.activity_main_read_imu_config_button);
+        if (readConfigButton != null) {
+            readConfigButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (eSenseController.getState() == ESenseConnectionState.CONNECTED) {
+                        eSenseController.readESenseConfig();
                     }
                 }
             });
@@ -178,6 +194,15 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 if (connectionStateLabel != null) {
                     connectionStateLabel.setText(eSenseController.getState().toString());
                 }
+                if (connectButton != null && disconnectButton != null) {
+                    if (eSenseController.getState() == ESenseConnectionState.DISCONNECTED) {
+                        connectButton.setEnabled(true);
+                        disconnectButton.setEnabled(false);
+                    } else {
+                        connectButton.setEnabled(false);
+                        disconnectButton.setEnabled(true);
+                    }
+                }
             }
         });
     }
@@ -193,6 +218,15 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                         accRangeLabel == null || accLPFLabel == null) {
                     return;
                 }
+                // Set button state
+                if (readConfigButton != null) {
+                    if (eSenseController.getState() == ESenseConnectionState.CONNECTED) {
+                        readConfigButton.setEnabled(true);
+                    } else {
+                        readConfigButton.setEnabled(false);
+                    }
+                }
+                // Set config labels
                 ESenseConfig config = eSenseController.getESenseConfig();
                 if (config == null ||
                         eSenseController.getState() != ESenseConnectionState.CONNECTED) {
@@ -304,7 +338,9 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     @Override
     public void onConnected(ESenseManager manager) {
         // Read IMU config
-        eSenseController.readESenseConfig();
+        if (!eSenseController.readESenseConfig()) {
+            showToast(getString(R.string.toast_message_read_config_failed));
+        }
         // Show toast and update UI
         showToast(getString(R.string.toast_message_device_connected));
         updateUI();

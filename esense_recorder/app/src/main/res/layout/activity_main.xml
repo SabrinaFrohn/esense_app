@@ -122,6 +122,14 @@
                     android:textColor="@color/colorHeading"
                     android:textStyle="bold" />
 
+                <!-- Read IMU config -->
+                <Button
+                    android:id="@+id/activity_main_read_imu_config_button"
+                    android:text="@string/activity_main_read_imu_config_button_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin" />
+
                 <!-- Gyroscope range -->
                 <LinearLayout
                     android:layout_width="match_parent"

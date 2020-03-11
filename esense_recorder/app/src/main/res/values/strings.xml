@@ -11,6 +11,7 @@
     <string name="activity_main_gyro_lpf_heading_text">Gyro. LPF:</string>
     <string name="activity_main_acc_range_heading_text">Acc. range:</string>
     <string name="activity_main_acc_lpf_heading_text">Acc. LPF:</string>
+    <string name="activity_main_read_imu_config_button_text">Read IMU configuration</string>
 
     <string name="imu_no_value_text">-</string>
     <string name="gyro_range_250">250 °.s-1</string>
@@ -49,6 +50,7 @@
     <string name="toast_message_no_paired_device">No paired device start connection!</string>
     <string name="toast_message_device_name_error">No device selected for the connection!</string>
     <string name="toast_message_esense_button_pressed">eSense button pressed.</string>
+    <string name="toast_message_read_config_failed">Read sensor config failed!</string>
 
     <string name="dialog_bt_not_supported_message">Bluetooth low-energy is required.</string>
     <string name="dialog_bt_not_supported_ok">Cancel</string>
