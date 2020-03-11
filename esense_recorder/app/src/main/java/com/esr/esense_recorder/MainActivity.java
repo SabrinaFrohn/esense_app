@@ -394,5 +394,15 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     public void onConnecting() {
         updateUI();
     }
+
+    @Override
+    public void onSensorNotificationsStarted(int samplingRate) {
+        // TODO
+    }
+
+    @Override
+    public void onSensorNotificationsStopped() {
+        // TODO
+    }
 }
 

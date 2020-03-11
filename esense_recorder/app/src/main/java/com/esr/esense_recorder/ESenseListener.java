@@ -16,4 +16,17 @@ public interface ESenseListener extends ESenseConnectionListener, ESenseEventLis
      */
     void onConnecting();
 
+    /**
+     * Called when the sensor notifications are started or the sampling rate of notification has
+     * been reset.
+     *
+     * @param samplingRate the sampling rate of the notification in Hz.
+     */
+    void onSensorNotificationsStarted(int samplingRate);
+
+    /**
+     * Called when the sensor notifications have been stopped.
+     */
+    void onSensorNotificationsStopped();
+
 }

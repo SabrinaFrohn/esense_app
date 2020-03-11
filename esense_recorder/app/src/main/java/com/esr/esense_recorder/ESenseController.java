@@ -12,6 +12,7 @@ import io.esense.esenselib.ESenseEvent;
 import io.esense.esenselib.ESenseEventListener;
 import io.esense.esenselib.ESenseManager;
 import io.esense.esenselib.ESenseSensorListener;
+import io.esense.esenselib.SamplingStatus;
 
 /**
  * Encapsulation of the <code>ESenseManager</code> to allows for:
@@ -36,11 +37,20 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     // List of listeners
     private ArrayList<ESenseListener> listeners = new ArrayList<>();
 
-    // Last known configuration
-    private ESenseConfig eSenseConfig;
-
     // Connected device name
     private String deviceName;
+
+    // Last known sensors configuration
+    private ESenseConfig eSenseConfig;
+
+    // Sensor notification state
+    private boolean sensorNotificationsActive = false;
+
+    // Sampling rate for sensor notifications
+    private int samplingRate = -1;
+
+    // Last known sensor data
+    private ESenseEvent lastSensorData = null;
 
     /**
      * Adds a listener to eSense events.
@@ -106,6 +116,34 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     }
 
     /**
+     * Returns the state of sensor notifications.
+     *
+     * @return <code>true</code> if sensor notifications are active, <code>false</code> otherwise.
+     */
+    public boolean areSensorNotificationsActive() {
+        return sensorNotificationsActive;
+    }
+
+    /**
+     * Returns the requested sampling rate for sensor notifications in milliseconds.
+     *
+     * @return the requested sampling rate for sensor notifications in Hz.
+     */
+    public int getSamplingRate() {
+        return samplingRate;
+    }
+
+    /**
+     * Returns the last known sensor data. Retrieving sensor data with this method is not
+     * recommended for the gyroscope due to the potential lost of data sample.
+     *
+     * @return the last known sensor data.
+     */
+    public ESenseEvent getLastSensorData() {
+        return lastSensorData;
+    }
+
+    /**
      * Connects a eSense device.
      *
      * @param name the name of the device.
@@ -123,9 +161,6 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         // Notify connection attempt
         ArrayList<ESenseListener> targets;
         synchronized (this) {
-            if (listeners.isEmpty()) {
-                return;
-            }
             targets = new ArrayList<>(listeners);
         }
         for (ESenseListener l: targets) {
@@ -150,11 +185,61 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     }
 
     /**
+     * Starts the sensor notifications.
+     *
+     * @param samplingRate The sampling rate of the notification in Hz, in range [1-100].
+     * @return <code>true</code> if the request has been sent correctly.
+     */
+    public boolean startSensorNotifications(int samplingRate) {
+        if (eSenseManager != null &&
+                state == ESenseConnectionState.CONNECTED) {
+            SamplingStatus status = eSenseManager.registerSensorListener(this,
+                    samplingRate);
+            if (status == SamplingStatus.STARTED) {
+                sensorNotificationsActive = true;
+                this.samplingRate = samplingRate;
+                // Notify listeners
+                ArrayList<ESenseListener> targets;
+                synchronized (this) {
+                    targets = new ArrayList<>(listeners);
+                }
+                for (ESenseListener l: targets) {
+                    l.onSensorNotificationsStarted(this.samplingRate);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Stops the sensor notifications.
+     */
+    public void stopSensorNotifications() {
+        if (eSenseManager != null &&
+                state == ESenseConnectionState.CONNECTED) {
+            if (sensorNotificationsActive) {
+                eSenseManager.unregisterEventListener();
+                // Notify listeners
+                ArrayList<ESenseListener> targets;
+                synchronized (this) {
+                    targets = new ArrayList<>(listeners);
+                }
+                for (ESenseListener l: targets) {
+                    l.onSensorNotificationsStopped();
+                }
+            }
+        }
+    }
+
+    /**
      * Clears the sensor data.
      */
     private void clearStoredSensorData() {
         eSenseConfig = null;
         deviceName = null;
+        sensorNotificationsActive = false;
+        samplingRate = -1;
+        lastSensorData = null;
         // TODO: To be completed
     }
 
@@ -327,7 +412,7 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     @Override
     public void onSensorChanged(ESenseEvent evt) {
-        // TODO
+        lastSensorData = evt;
         // Inform listeners
         ArrayList<ESenseListener> targets;
         synchronized (this) {
