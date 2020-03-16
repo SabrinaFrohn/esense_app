@@ -112,6 +112,66 @@
                     android:layout_marginBottom="@dimen/horizontal_margin"
                     android:background="@android:color/darker_gray" />
 
+                <!-- Section: Logger -->
+                <TextView
+                    android:text="@string/activity_main_logger_section_heading_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading"
+                    android:textStyle="bold" />
+
+                <!-- Start stop record -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/activity_main_start_record_button"
+                        android:text="@string/activity_main_start_record_button_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                    <Button
+                        android:id="@+id/activity_main_stop_record_button"
+                        android:text="@string/activity_main_stop_record_button_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <!-- Record state -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_record_state_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_record_state_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Separator -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/horizontal_margin"
+                    android:layout_marginBottom="@dimen/horizontal_margin"
+                    android:background="@android:color/darker_gray" />
+
                 <!-- Section: IMU configuration -->
                 <TextView
                     android:text="@string/activity_main_imu_configuration_section_heading_text"
@@ -236,7 +296,231 @@
                     android:textColor="@color/colorHeading"
                     android:textStyle="bold" />
 
-                <!-- TODO -->
+                <!-- Start stop sensors -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/activity_main_start_sensor_button"
+                        android:text="@string/activity_main_start_sensor_button_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                    <Button
+                        android:id="@+id/activity_main_stop_sensor_button"
+                        android:text="@string/activity_main_stop_sensor_button_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <!-- Sampling rate -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_sampling_rate_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_sampling_rate_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Notification period -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/activity_main_notification_period_heading_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorHeading" />
+                    <TextView
+                        android:id="@+id/activity_main_notification_period_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Raw accelerometer data -->
+                <TextView
+                    android:text="@string/activity_main_raw_acc_data_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/activity_main_raw_acc_x_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_raw_acc_y_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_raw_acc_z_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Converted accelerometer data -->
+                <TextView
+                    android:text="@string/activity_main_converted_acc_data_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/activity_main_conv_acc_x_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_conv_acc_y_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_conv_acc_z_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Raw gyroscope data -->
+                <TextView
+                    android:text="@string/activity_main_raw_gyro_data_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/activity_main_raw_gyro_x_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_raw_gyro_y_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_raw_gyro_z_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
+
+                <!-- Converted gyroscope data -->
+                <TextView
+                    android:text="@string/activity_main_converted_gyro_data_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:textColor="@color/colorHeading" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/activity_main_conv_gyro_x_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_conv_gyro_y_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                    <TextView
+                        android:id="@+id/activity_main_conv_gyro_z_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorLabel" />
+                </LinearLayout>
 
                 <!-- Separator -->
                 <View

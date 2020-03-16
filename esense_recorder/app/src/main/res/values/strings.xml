@@ -12,6 +12,18 @@
     <string name="activity_main_acc_range_heading_text">Acc. range:</string>
     <string name="activity_main_acc_lpf_heading_text">Acc. LPF:</string>
     <string name="activity_main_read_imu_config_button_text">Read IMU configuration</string>
+    <string name="activity_main_start_sensor_button_text">Start</string>
+    <string name="activity_main_stop_sensor_button_text">Stop</string>
+    <string name="activity_main_raw_acc_data_text">Raw accelerometer data:</string>
+    <string name="activity_main_converted_acc_data_text">Converted accelerometer data (g):</string>
+    <string name="activity_main_raw_gyro_data_text">Raw gyroscope data:</string>
+    <string name="activity_main_converted_gyro_data_text">Converted gyroscope data (deg/sec):</string>
+    <string name="activity_main_logger_section_heading_text">Data logger</string>
+    <string name="activity_main_start_record_button_text">Start</string>
+    <string name="activity_main_stop_record_button_text">Stop</string>
+    <string name="activity_main_record_state_heading_text">Record state:</string>
+    <string name="activity_main_sampling_rate_heading_text">Sampling rate (Hz):</string>
+    <string name="activity_main_notification_period_heading_text">Notif. period (ms):</string>
 
     <string name="imu_no_value_text">-</string>
     <string name="gyro_range_250">250 °.s-1</string>

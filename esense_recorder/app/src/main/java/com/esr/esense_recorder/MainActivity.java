@@ -35,6 +35,24 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     private Button connectButton;
     private Button disconnectButton;
     private Button readConfigButton;
+    private Button startRecordButton;
+    private Button stopRecordButton;
+    private Button startSensorButton;
+    private Button stopSensorButton;
+    private TextView rawAccXLabel;
+    private TextView rawAccYLabel;
+    private TextView rawAccZLabel;
+    private TextView convAccXLabel;
+    private TextView convAccYLabel;
+    private TextView convAccZLabel;
+    private TextView rawGyroXLabel;
+    private TextView rawGyroYLabel;
+    private TextView rawGyroZLabel;
+    private TextView convGyroXLabel;
+    private TextView convGyroYLabel;
+    private TextView convGyroZLabel;
+    private TextView samplingRateLabel;
+    private TextView notifPeriodLabel;
 
     // Format for label
 
@@ -53,6 +71,20 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         gyroLPFLabel = findViewById(R.id.activity_main_gyro_lpf_label);
         accRangeLabel = findViewById(R.id.activity_main_acc_range_label);
         accLPFLabel = findViewById(R.id.activity_main_acc_lpf_label);
+        rawAccXLabel = findViewById(R.id.activity_main_raw_acc_x_label);
+        rawAccYLabel = findViewById(R.id.activity_main_raw_acc_y_label);
+        rawAccZLabel = findViewById(R.id.activity_main_raw_acc_z_label);
+        convAccXLabel = findViewById(R.id.activity_main_conv_acc_x_label);
+        convAccYLabel = findViewById(R.id.activity_main_conv_acc_y_label);
+        convAccZLabel = findViewById(R.id.activity_main_conv_acc_z_label);
+        rawGyroXLabel = findViewById(R.id.activity_main_raw_gyro_x_label);
+        rawGyroYLabel = findViewById(R.id.activity_main_raw_gyro_y_label);
+        rawGyroZLabel = findViewById(R.id.activity_main_raw_gyro_z_label);
+        convGyroXLabel = findViewById(R.id.activity_main_conv_gyro_x_label);
+        convGyroYLabel = findViewById(R.id.activity_main_conv_gyro_y_label);
+        convGyroZLabel = findViewById(R.id.activity_main_conv_gyro_z_label);
+        samplingRateLabel = findViewById(R.id.activity_main_sampling_rate_label);
+        notifPeriodLabel = findViewById(R.id.activity_main_notification_period_label);
 
         // *** UI event handlers ***
 
@@ -92,6 +124,50 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                     if (eSenseController.getState() == ESenseConnectionState.CONNECTED) {
                         eSenseController.readESenseConfig();
                     }
+                }
+            });
+        }
+
+        // Start record button
+        startRecordButton = findViewById(R.id.activity_main_start_record_button);
+        if (startRecordButton != null) {
+            startRecordButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO
+                }
+            });
+        }
+
+        // Stop record button
+        stopRecordButton = findViewById(R.id.activity_main_stop_record_button);
+        if (stopRecordButton != null) {
+            stopRecordButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO
+                }
+            });
+        }
+
+        // Start sensors button
+        startSensorButton = findViewById(R.id.activity_main_start_sensor_button);
+        if (startSensorButton != null) {
+            startSensorButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO
+                }
+            });
+        }
+
+        // Stop sensors button
+        stopSensorButton = findViewById(R.id.activity_main_stop_sensor_button);
+        if (stopSensorButton != null) {
+            stopSensorButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO
                 }
             });
         }
@@ -182,6 +258,8 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     private void updateUI() {
         updateConnectionPanel();
         updateIMUConfigurationPanel();
+        updateLoggerPanel();
+        updateSensorDataPanel();
     }
 
     /**
@@ -323,6 +401,20 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         });
     }
 
+    /**
+     * Updates the logger panel.
+     */
+    private void updateLoggerPanel() {
+        // TODO
+    }
+
+    /**
+     * Update the sensor data panel.
+     */
+    private void updateSensorDataPanel() {
+        // TODO
+    }
+
     @Override
     public void onDeviceFound(ESenseManager manager) {
         showToast(getString(R.string.toast_message_device_found));
@@ -367,7 +459,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                                                          int maxAdvertisementInterval,
                                                          int minConnectionInterval,
                                                          int maxConnectionInterval) {
-        // TODO
+        // Nothing to do
     }
 
     @Override
@@ -382,12 +474,12 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onAccelerometerOffsetRead(int offsetX, int offsetY, int offsetZ) {
-        // TODO
+        // Nothing to do
     }
 
     @Override
     public void onSensorChanged(ESenseEvent evt) {
-        // TODO
+        updateSensorDataPanel();
     }
 
     @Override
@@ -397,12 +489,12 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onSensorNotificationsStarted(int samplingRate) {
-        // TODO
+        updateSensorDataPanel();
     }
 
     @Override
     public void onSensorNotificationsStopped() {
-        // TODO
+        updateSensorDataPanel();
     }
 }
 
