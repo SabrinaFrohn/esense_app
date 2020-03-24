@@ -169,6 +169,7 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         // Connection
         eSenseManager = new ESenseManager(name, context, this);
         eSenseManager.connect(CONNECTION_TIMEOUT_MS);
+
     }
 
     /**
@@ -279,6 +280,7 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     @Override
     public void onConnected(ESenseManager manager) {
+        eSenseManager.registerEventListener(this);
         // Set state
         state = ESenseConnectionState.CONNECTED;
         // Inform listeners

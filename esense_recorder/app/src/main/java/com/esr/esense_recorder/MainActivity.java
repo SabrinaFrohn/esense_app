@@ -156,7 +156,9 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
             startSensorButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO
+                    if (eSenseController.getState() == ESenseConnectionState.CONNECTED ){
+                        eSenseController.startSensorNotifications(4); // four readings per second
+                    }
                 }
             });
         }
@@ -167,7 +169,9 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
             stopSensorButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO
+                    if (eSenseController.getState() == ESenseConnectionState.CONNECTED ){
+                        eSenseController.stopSensorNotifications();
+                    }
                 }
             });
         }
