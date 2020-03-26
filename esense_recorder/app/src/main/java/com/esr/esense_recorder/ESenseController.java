@@ -45,6 +45,8 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
 
     // Sensor notification state
     private boolean sensorNotificationsActive = false;
+    private long lastNotificationNanoTime = -1;
+    private long lastNotificationPeriodNano = -1;
 
     // Sampling rate for sensor notifications
     private int samplingRate = -1;
@@ -125,7 +127,8 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     }
 
     /**
-     * Returns the requested sampling rate for sensor notifications in milliseconds.
+     * Returns the requested sampling rate for sensor notifications in milliseconds. Returns a
+     * negative value if no sampling rate is defined.
      *
      * @return the requested sampling rate for sensor notifications in Hz.
      */
@@ -134,13 +137,43 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     }
 
     /**
-     * Returns the last known sensor data. Retrieving sensor data with this method is not
+     * Returns the period in seconds between the last two sensor sample. Returns a negative value if
+     * there is no samples.
+     * @return the period in seconds between the last two sensor sample.
+     */
+    public double getLastSamplePeriod() {
+        if (lastNotificationPeriodNano <= 0) {
+            return -1.;
+        } else {
+            return ((double)lastNotificationPeriodNano)/1.E9;
+        }
+    }
+
+    /**
+     * Returns the last known  raw sensor data. Retrieving sensor data with this method is not
      * recommended for the gyroscope due to the potential lost of data sample.
      *
-     * @return the last known sensor data.
+     * @return the last known raw sensor data.
      */
     public ESenseEvent getLastSensorData() {
         return lastSensorData;
+    }
+
+    /**
+     * Returns the converted sensor data.
+     * @return the converted sensor data.
+     */
+    public double[][] getConvertedSensorData() {
+        if (eSenseConfig == null || lastSensorData == null) {
+            return null;
+        } else {
+            double[] convAcc = lastSensorData.convertAccToG(eSenseConfig);
+            double[] convGyro = lastSensorData.convertGyroToDegPerSecond(eSenseConfig);
+            double[][] conv = new double[2][3];
+            System.arraycopy(convAcc, 0, conv[0], 0, 3);
+            System.arraycopy(convGyro, 0, conv[1], 0, 3);
+            return conv;
+        }
     }
 
     /**
@@ -241,7 +274,8 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         sensorNotificationsActive = false;
         samplingRate = -1;
         lastSensorData = null;
-        // TODO: To be completed
+        lastNotificationNanoTime = -1;
+        lastNotificationPeriodNano = -1;
     }
 
     // *** Implementation of the ESenseManager listeners ***
@@ -415,6 +449,13 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     @Override
     public void onSensorChanged(ESenseEvent evt) {
         lastSensorData = evt;
+        long nanoTime = System.nanoTime();
+        if (lastNotificationNanoTime > 0) {
+            lastNotificationPeriodNano = nanoTime-lastNotificationNanoTime;
+        } else {
+            lastNotificationPeriodNano = -1;
+        }
+        lastNotificationNanoTime = nanoTime;
         // Inform listeners
         ArrayList<ESenseListener> targets;
         synchronized (this) {

@@ -22,10 +22,12 @@
     <string name="activity_main_start_record_button_text">Start</string>
     <string name="activity_main_stop_record_button_text">Stop</string>
     <string name="activity_main_record_state_heading_text">Record state:</string>
-    <string name="activity_main_sampling_rate_heading_text">Sampling rate (Hz):</string>
-    <string name="activity_main_notification_period_heading_text">Notif. period (ms):</string>
+    <string name="activity_main_sampling_rate_heading_text">Sampling rate:</string>
+    <string name="activity_main_notification_rate_heading_text">Notif. rate:</string>
+    <string name="activity_main_not_recording_text">Standby</string>
+    <string name="activity_main_recording_text">Recording</string>
 
-    <string name="imu_no_value_text">-</string>
+    <string name="unknown_value_text">-</string>
     <string name="gyro_range_250">250 °.s-1</string>
     <string name="gyro_range_500">500 °.s-1</string>
     <string name="gyro_range_1000">1000 °.s-1</string>
@@ -51,6 +53,20 @@
     <string name="acc_lpf_10">10 Hz</string>
     <string name="acc_lpf_5">5 Hz</string>
     <string name="acc_lpf_disabled">Disabled</string>
+    <string name="sampling_rate_format">%d Hz</string>
+    <string name="notif_rate_format">%.2f Hz</string>
+    <string name="conv_acc_data_decimal_format">0.00</string>
+    <string name="conv_gyro_data_decimal_format">0.00</string>
+
+    <string name="log_field_separator">\t</string>
+    <string name="log_line_terminator">\n</string>
+    <string name="log_start_date_pattern">yyyy-MM-dd HH:mm:ss.SSS</string>
+    <string name="log_start_message">Start log.</string>
+    <string name="log_stop_message">Log stopped.</string>
+    <string name="log_sensors_stopped_message">Sensor stopped.</string>
+    <string name="log_disconnection_message">Device disconnected.</string>
+    <string name="log_sensor_event_message">Sensor notification.</string>
+    <string name="log_button_event_message">Device button pressed.</string>
 
     <string name="toast_message_bt_activation_rejected">Bluetooth activation rejected.</string>
     <string name="toast_message_bt_activation_failed">Bluetooth activation failed!</string>
@@ -65,6 +81,8 @@
     <string name="toast_message_read_config_failed">Read sensor config failed!</string>
     <string name="toast_message_no_device_connected">No device connected!</string>
     <string name="toast_message_start_sensor_failed">Failed to start sensor notifications!</string>
+    <string name="toast_sampling_rate_out_of_bounds">Invalid sampling rate value!</string>
+    <string name="toast_sampling_rate_illegal">Invalid sampling rate value!</string>
 
     <string name="dialog_bt_not_supported_message">Bluetooth low-energy is required.</string>
     <string name="dialog_bt_not_supported_ok">Cancel</string>
@@ -73,5 +91,11 @@
     <string name="dialog_enable_location_message">To connect the Bluetooth device, the location service must be enabled (this is an Android limitation and a bad joke from Google).</string>
     <string name="dialog_enable_location_ok">Continue</string>
     <string name="dialog_device_selection_title">Select the device to connect to</string>
+    <string name="dialog_cancel_log_message">Stop log?</string>
+    <string name="dialog_cancel_log_yes_button">Yes</string>
+    <string name="dialog_cancel_log_no_button">No</string>
+    <string name="dialog_sampling_rate_title">Enter the sampling rate: [1–100] Hz</string>
+    <string name="dialog_sampling_rate_ok_button">OK</string>
+    <string name="dialog_sampling_rate_cancel_button">Cancel</string>
 
 </resources>

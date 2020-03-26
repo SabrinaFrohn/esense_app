@@ -1,18 +1,27 @@
 package com.esr.esense_recorder;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import io.esense.esenselib.ESenseConfig;
 import io.esense.esenselib.ESenseEvent;
@@ -37,6 +46,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     private Button readConfigButton;
     private Button startRecordButton;
     private Button stopRecordButton;
+    private TextView recordStateLabel;
     private Button startSensorButton;
     private Button stopSensorButton;
     private TextView rawAccXLabel;
@@ -52,16 +62,32 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     private TextView convGyroYLabel;
     private TextView convGyroZLabel;
     private TextView samplingRateLabel;
-    private TextView notifPeriodLabel;
+    private TextView notifRateLabel;
 
     // eSense controller
     ESenseController eSenseController = new ESenseController();
 
     // Logger (null is not logging)
-    SimpleLogger logger;
+    private SimpleLogger logger;
+    private long startLogNanoTime;
+
+    // Log parameters
+    private @NonNull String logSeparator = "\t";
+    private @NonNull String logTerminator = "\n";
+
+    // Handler for regular updates of sensor fields
+    Handler uiUpdateHandler = new Handler();
+    public static final long UI_UPDATE_DELAY_MILLIS = 500;
+
+    // Decimal formats
+    private DecimalFormat convAccFormat = new DecimalFormat("00.00");
+    private DecimalFormat convGyroFormat = new DecimalFormat("00.00");
 
     // Flag for pending log (after config read and start sensor)
     private boolean pendingStartLog = false;
+
+    private String LAST_SAMPLING_RATE_KEY = "LAST_SAMPLING_RATE_KEY";
+    private int lastSamplingRate = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +96,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
         // References to UI components
         connectionStateLabel = findViewById(R.id.activity_main_connection_state_label);
+        recordStateLabel = findViewById(R.id.activity_main_record_state_label);
         gyroRangeLabel = findViewById(R.id.activity_main_gyro_range_label);
         gyroLPFLabel = findViewById(R.id.activity_main_gyro_lpf_label);
         accRangeLabel = findViewById(R.id.activity_main_acc_range_label);
@@ -87,7 +114,19 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         convGyroYLabel = findViewById(R.id.activity_main_conv_gyro_y_label);
         convGyroZLabel = findViewById(R.id.activity_main_conv_gyro_z_label);
         samplingRateLabel = findViewById(R.id.activity_main_sampling_rate_label);
-        notifPeriodLabel = findViewById(R.id.activity_main_notification_period_label);
+        notifRateLabel = findViewById(R.id.activity_main_notification_rate_label);
+
+        // Retrieve log parameters
+        logSeparator = getString(R.string.log_field_separator);
+        logTerminator = getString(R.string.log_line_terminator);
+
+        // Init. formats
+        convAccFormat = new DecimalFormat(getString(R.string.conv_acc_data_decimal_format));
+        convGyroFormat = new DecimalFormat(getString(R.string.conv_gyro_data_decimal_format));
+
+        // Retrieve defaults
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        lastSamplingRate = prefs.getInt(LAST_SAMPLING_RATE_KEY, lastSamplingRate);
 
         // *** UI event handlers ***
 
@@ -112,8 +151,27 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 @Override
                 public void onClick(View v) {
                     if (eSenseController.getState() != ESenseConnectionState.DISCONNECTED) {
-                        if (logger != null) {
-                            // TODO dialog to confirm stop log
+                        if (logger != null && logger.isLogging()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(
+                                    MainActivity.this);
+                            builder.setMessage(R.string.dialog_cancel_log_message);
+                            builder.setPositiveButton(
+                                    R.string.dialog_cancel_log_yes_button,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            eSenseController.disconnect();
+                                        }
+                                    });
+                            builder.setNegativeButton(
+                                    R.string.dialog_cancel_log_no_button,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Cancel
+                                        }
+                                    });
+                            builder.create().show();
                         } else {
                             eSenseController.disconnect();
                         }
@@ -141,7 +199,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
             startRecordButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (logger != null) {
+                    if (logger != null && logger.isLogging()) {
                         // Ignore when already logging
                         return;
                     }
@@ -151,12 +209,11 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                             pendingStartLog = true;
                             eSenseController.readESenseConfig();
                         } else if (!eSenseController.areSensorNotificationsActive()) {
-                            if (!eSenseController.startSensorNotifications(4)) {
-                                showToast(getString(R.string.toast_message_start_sensor_failed));
-                                return;
-                            }
+                            pendingStartLog = true;
+                            startSensors();
+                        } else {
+                            startLog();
                         }
-                        startLog();
                     } else {
                         showToast(getString(R.string.toast_message_no_device_connected));
                     }
@@ -170,7 +227,14 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
             stopRecordButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO
+                    long elapsedMillis = (System.nanoTime()-startLogNanoTime)/1000000;
+                    logger.log(MainActivity.this, logSeparator, logTerminator,
+                            String.format(
+                                    Locale.getDefault(), "%d", elapsedMillis),
+                            getString(R.string.log_stop_message));
+                    logger.closeLog(MainActivity.this);
+                    logger = null;
+                    updateLoggerPanel();
                 }
             });
         }
@@ -182,12 +246,8 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 @Override
                 public void onClick(View v) {
                     if (eSenseController.getState() == ESenseConnectionState.CONNECTED ){
-                        if (eSenseController.areSensorNotificationsActive()) {
-                            // Ignore when already started
-                            return;
-                        }
-                        if (!eSenseController.startSensorNotifications(4)) {
-                            showToast(getString(R.string.toast_message_start_sensor_failed));
+                        if (!eSenseController.areSensorNotificationsActive()) {
+                            startSensors();
                         }
                     }
                 }
@@ -205,8 +265,27 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                             // Ignore when already stopped
                             return;
                         }
-                        if (logger != null) {
-                            // TODO dialog to confirm stop log
+                        if (logger != null && logger.isLogging()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(
+                                    MainActivity.this);
+                            builder.setMessage(R.string.dialog_cancel_log_message);
+                            builder.setPositiveButton(
+                                    R.string.dialog_cancel_log_yes_button,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            eSenseController.stopSensorNotifications();
+                                        }
+                                    });
+                            builder.setNegativeButton(
+                                    R.string.dialog_cancel_log_no_button,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Cancel
+                                        }
+                                    });
+                            builder.create().show();
                         } else {
                             eSenseController.stopSensorNotifications();
                         }
@@ -220,7 +299,74 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
      * Starts the log of sensor events.
      */
     private void startLog() {
-        // TODO
+        pendingStartLog = false;
+        startLogNanoTime = System.nanoTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                getString(R.string.log_start_date_pattern), Locale.getDefault());
+        String date = dateFormat.format(new Date());
+        logger.log(this, logSeparator, logTerminator,
+                "0",
+                getString(R.string.log_start_message),
+                date);
+    }
+
+    /**
+     * Asks for the sampling rate and start the sensors (asynchronously)
+     */
+    private void startSensors() {
+        if (eSenseController.areSensorNotificationsActive()) {
+            if (pendingStartLog) {
+                startLog();
+            }
+            return;
+        }
+        // Dialog for sampling rate
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.dialog_sampling_rate_title);
+        final EditText edittext = new EditText(MainActivity.this);
+        edittext.setText(String.format(Locale.getDefault(), "%d", lastSamplingRate));
+        edittext.setInputType(2); // Number keyboard
+        builder.setView(edittext);
+        builder.setPositiveButton(R.string.dialog_sampling_rate_ok_button,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Retrieve sampling rate
+                        String rateString = edittext.getText().toString().trim();
+                        try {
+                            int rate = Integer.parseInt(rateString);
+                            if (rate < 1 || rate > 100) {
+                                showToast(getString(R.string.toast_sampling_rate_out_of_bounds));
+                                pendingStartLog = false;
+                            } else {
+                                // Save value
+                                SharedPreferences prefs = PreferenceManager
+                                        .getDefaultSharedPreferences(MainActivity.this);
+                                prefs.edit().putInt(LAST_SAMPLING_RATE_KEY, lastSamplingRate)
+                                        .apply();
+                                // Start sensors
+                                if (!eSenseController.startSensorNotifications(
+                                        lastSamplingRate)) {
+                                    showToast(
+                                            getString(R.string.toast_message_start_sensor_failed));
+                                }
+                            }
+                        } catch (Exception e) {
+                            showToast(getString(R.string.toast_sampling_rate_illegal));
+                            pendingStartLog = false;
+                        }
+                    }
+                });
+        builder.setNegativeButton(
+                R.string.dialog_sampling_rate_cancel_button,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cancel
+                        pendingStartLog = false;
+                    }
+                });
+        builder.create().show();
     }
 
     @Override
@@ -228,16 +374,39 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         super.onResume();
         eSenseController.addListener(this);
         updateUI();
+        // Start handler for regular sensor fields updates
+        uiUpdateHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (eSenseController != null &&
+                            eSenseController.areSensorNotificationsActive()) {
+                        updateSensorDataPanel();
+                    }
+                } catch (Exception e) {
+                    Log.e(DEBUG_TAG, "Failed to update UI.", e);
+                } finally {
+                    uiUpdateHandler.postDelayed(this, UI_UPDATE_DELAY_MILLIS);
+                }
+            }
+        }, UI_UPDATE_DELAY_MILLIS);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         eSenseController.removeListener(this);
+        // Stop UI update handler
+        uiUpdateHandler.removeCallbacksAndMessages(null);
+        // Close connection and logger on finishing
         if (isFinishing()) {
             // Stop log
-            if (logger != null) {
-                // TODO log close event
+            if (logger != null && logger.isLogging()) {
+                long elapsedMillis = (System.nanoTime()-startLogNanoTime)/1000000;
+                logger.log(MainActivity.this, logSeparator, logTerminator,
+                        String.format(
+                                Locale.getDefault(), "%d", elapsedMillis),
+                        getString(R.string.log_stop_message));
                 logger.closeLog(this);
                 logger = null;
             }
@@ -364,10 +533,10 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 ESenseConfig config = eSenseController.getESenseConfig();
                 if (config == null ||
                         eSenseController.getState() != ESenseConnectionState.CONNECTED) {
-                    gyroRangeLabel.setText(getString(R.string.imu_no_value_text));
-                    gyroLPFLabel.setText(getString(R.string.imu_no_value_text));
-                    accRangeLabel.setText(getString(R.string.imu_no_value_text));
-                    accLPFLabel.setText(getString(R.string.imu_no_value_text));
+                    gyroRangeLabel.setText(getString(R.string.unknown_value_text));
+                    gyroLPFLabel.setText(getString(R.string.unknown_value_text));
+                    accRangeLabel.setText(getString(R.string.unknown_value_text));
+                    accLPFLabel.setText(getString(R.string.unknown_value_text));
                 } else {
                     switch (config.getGyroRange()) {
                         case DEG_250:
@@ -461,14 +630,135 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
      * Updates the logger panel.
      */
     private void updateLoggerPanel() {
-        // TODO
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (eSenseController != null &&
+                        startRecordButton != null && stopRecordButton != null) {
+                    if (eSenseController.getState() != ESenseConnectionState.CONNECTED) {
+                        startRecordButton.setEnabled(false);
+                        stopRecordButton.setEnabled(false);
+                    } else if (logger == null || !logger.isLogging()) {
+                        startRecordButton.setEnabled(true);
+                        stopRecordButton.setEnabled(false);
+                    } else {
+                        startRecordButton.setEnabled(false);
+                        stopRecordButton.setEnabled(true);
+                    }
+                }
+                if (recordStateLabel != null) {
+                    if (logger == null || !logger.isLogging()) {
+                        recordStateLabel.setText(R.string.activity_main_not_recording_text);
+                        recordStateLabel.setTextColor(getColor(R.color.colorLabelDisabled));
+                    } else {
+                        recordStateLabel.setText(R.string.activity_main_recording_text);
+                        recordStateLabel.setTextColor(getColor(R.color.colorAccent));
+                    }
+                }
+            }
+        });
     }
 
     /**
      * Update the sensor data panel.
      */
     private void updateSensorDataPanel() {
-        // TODO
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (eSenseController == null) {
+                    return;
+                }
+                ESenseEvent rawSensorData = eSenseController.getLastSensorData();
+                double[][] convSensorData = eSenseController.getConvertedSensorData();
+                // Start stop buttons
+                if (startSensorButton != null && stopSensorButton != null) {
+                    if (eSenseController.getState() != ESenseConnectionState.CONNECTED) {
+                        startSensorButton.setEnabled(false);
+                        stopSensorButton.setEnabled(false);
+                    } else if (eSenseController.areSensorNotificationsActive()) {
+                        startSensorButton.setEnabled(false);
+                        stopSensorButton.setEnabled(true);
+                    } else {
+                        startSensorButton.setEnabled(true);
+                        stopSensorButton.setEnabled(false);
+                    }
+                }
+                // Sampling rate
+                if (samplingRateLabel != null) {
+                    int rate = eSenseController.getSamplingRate();
+                    if (rate <= 0) {
+                        samplingRateLabel.setText(R.string.unknown_value_text);
+                    } else {
+                        samplingRateLabel.setText(
+                                String.format(getString(R.string.sampling_rate_format), rate));
+                    }
+                }
+                // Notification rate
+                if (notifRateLabel != null) {
+                    double notifPeriod = eSenseController.getLastSamplePeriod();
+                    if (notifPeriod <= 0) {
+                        notifRateLabel.setText(R.string.unknown_value_text);
+                    } else {
+                        double rate = 1./notifPeriod;
+                        notifRateLabel.setText(
+                                String.format(getString(R.string.notif_rate_format), rate));
+                    }
+                }
+                // Raw data
+                if (rawAccXLabel != null && rawAccYLabel != null && rawAccZLabel != null) {
+                    if (rawSensorData != null) {
+                        rawAccXLabel.setText(String.format(Locale.getDefault(),
+                                "%d", rawSensorData.getAccel()[0]));
+                        rawAccYLabel.setText(String.format(Locale.getDefault(),
+                                "%d", rawSensorData.getAccel()[1]));
+                        rawAccZLabel.setText(String.format(Locale.getDefault(),
+                                "%d", rawSensorData.getAccel()[2]));
+                    } else {
+                        rawAccXLabel.setText(R.string.unknown_value_text);
+                        rawAccYLabel.setText(R.string.unknown_value_text);
+                        rawAccZLabel.setText(R.string.unknown_value_text);
+                    }
+                }
+                if (rawGyroXLabel != null && rawGyroYLabel != null && rawGyroZLabel != null) {
+                    if (rawSensorData != null) {
+                        rawGyroXLabel.setText(String.format(Locale.getDefault(),
+                                "%d", rawSensorData.getGyro()[0]));
+                        rawGyroYLabel.setText(String.format(Locale.getDefault(),
+                                "%d", rawSensorData.getGyro()[1]));
+                        rawGyroZLabel.setText(String.format(Locale.getDefault(),
+                                "%d", rawSensorData.getGyro()[2]));
+                    } else {
+                        rawGyroXLabel.setText(R.string.unknown_value_text);
+                        rawGyroYLabel.setText(R.string.unknown_value_text);
+                        rawGyroZLabel.setText(R.string.unknown_value_text);
+                    }
+                }
+                // Converted data
+                if (convAccXLabel != null && convAccYLabel != null && convAccZLabel != null) {
+                    if (convSensorData != null) {
+                        convAccXLabel.setText(convAccFormat.format(convSensorData[0][0]));
+                        convAccYLabel.setText(convAccFormat.format(convSensorData[0][1]));
+                        convAccZLabel.setText(convAccFormat.format(convSensorData[0][2]));
+                    } else {
+                        convAccXLabel.setText(R.string.unknown_value_text);
+                        convAccYLabel.setText(R.string.unknown_value_text);
+                        convAccZLabel.setText(R.string.unknown_value_text);
+                    }
+                }
+                if (convGyroXLabel != null && convGyroYLabel != null && convGyroZLabel != null) {
+                    if (convSensorData != null) {
+                        convGyroXLabel.setText(convGyroFormat.format(convSensorData[1][0]));
+                        convGyroYLabel.setText(convGyroFormat.format(convSensorData[1][1]));
+                        convGyroZLabel.setText(convGyroFormat.format(convSensorData[1][2]));
+                    } else {
+                        convGyroXLabel.setText(R.string.unknown_value_text);
+                        convGyroYLabel.setText(R.string.unknown_value_text);
+                        convGyroZLabel.setText(R.string.unknown_value_text);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -497,8 +787,12 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     @Override
     public void onDisconnected(ESenseManager manager) {
         // Stop log
-        if (logger != null) {
-            // TODO log disconnection event
+        if (logger != null && logger.isLogging()) {
+            long elapsedMillis = (System.nanoTime()-startLogNanoTime)/1000000;
+            logger.log(this, logSeparator, logTerminator,
+                    String.format(
+                            Locale.getDefault(), "%d", elapsedMillis),
+                    getString(R.string.log_disconnection_message));
             logger.closeLog(this);
             logger = null;
         }
@@ -515,8 +809,12 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     @Override
     public void onButtonEventChanged(boolean pressed) {
         // Log event
-        if (logger != null) {
-            // TODO log button event
+        if (logger != null && logger.isLogging()) {
+            long elapsedMillis = (System.nanoTime()-startLogNanoTime)/1000000;
+            String elapsed = String.format(Locale.getDefault(), "%d", elapsedMillis);
+            logger.log(this, logSeparator, logTerminator,
+                    elapsed,
+                    getString(R.string.log_button_event_message));
         }
         showToast(getString(R.string.toast_message_esense_button_pressed));
     }
@@ -538,8 +836,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     public void onSensorConfigRead(ESenseConfig config) {
         updateIMUConfigurationPanel();
         if (pendingStartLog) {
-            pendingStartLog = false;
-            startLog();
+            startSensors();
         }
     }
 
@@ -552,9 +849,29 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     public void onSensorChanged(ESenseEvent evt) {
         // Log sensor data
         if (logger != null) {
-            // TODO
+            long elapsedMillis = (System.nanoTime()-startLogNanoTime)/1000000;
+            String elapsed = String.format(Locale.getDefault(), "%d", elapsedMillis);
+            ESenseConfig config = eSenseController.getESenseConfig();
+            double[] convAcc = null;
+            double[] convGyro = null;
+            if (config != null) {
+                convAcc = evt.convertAccToG(config);
+                convGyro = evt.convertGyroToDegPerSecond(config);
+            }
+            logger.log(this, logSeparator, logTerminator,
+                    elapsed,
+                    getString(R.string.log_sensor_event_message),
+                    evt.getAccel()[0], evt.getAccel()[1], evt.getAccel()[2],
+                    evt.getGyro()[0], evt.getGyro()[1], evt.getGyro()[2],
+                    (convAcc==null)?("-"):(convAcc[0]),
+                    (convAcc==null)?("-"):(convAcc[1]),
+                    (convAcc==null)?("-"):(convAcc[2]),
+                    (convGyro==null)?("-"):(convGyro[0]),
+                    (convGyro==null)?("-"):(convGyro[1]),
+                    (convGyro==null)?("-"):(convGyro[2])
+                    );
         }
-        updateSensorDataPanel();
+        // No UI update. This is made in separate handler.
     }
 
     @Override
@@ -570,8 +887,12 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     @Override
     public void onSensorNotificationsStopped() {
         // Stop log
-        if (logger != null) {
-            // TODO log stop sensor notification
+        if (logger != null && logger.isLogging()) {
+            long elapsedMillis = (System.nanoTime()-startLogNanoTime)/1000000;
+            logger.log(this, logSeparator, logTerminator,
+                    String.format(
+                            Locale.getDefault(), "%d", elapsedMillis),
+                    getString(R.string.log_sensors_stopped_message));
             logger.closeLog(this);
             logger = null;
         }
