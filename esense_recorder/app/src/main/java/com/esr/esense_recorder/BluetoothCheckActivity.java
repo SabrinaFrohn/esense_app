@@ -36,6 +36,7 @@ public class BluetoothCheckActivity extends AppCompatActivity {
     // Codes for dialog callbacks
     protected static final int ENABLE_LOCATION_PERMISSION_CODE = 71;
     protected static final int ENABLE_BLUETOOTH_REQUEST_CODE = 72;
+    protected static final int ENABLE_STORAGE_PERMISSION_CODE = 73;
 
     // Activation callback
     private BluetoothCheckCallback activationCallback;
@@ -120,6 +121,20 @@ public class BluetoothCheckActivity extends AppCompatActivity {
             // Always show rational because the logic of
             // "shouldShowRequestPermissionRationale()" is broken.
             showDialogLocationPermissionRationale();
+            return;
+        }
+
+        // Check permission to read and write storage (for log)
+        if (checkSelfPermission(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(
+                        Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    ENABLE_STORAGE_PERMISSION_CODE);
             return;
         }
 
@@ -293,6 +308,20 @@ public class BluetoothCheckActivity extends AppCompatActivity {
                 activateBluetooth(BluetoothCheckActivity.this.activationCallback);
             } else {
                 if (DEBUG) Log.e(DEBUG_TAG, "Location permission not granted.");
+                pendingActivation = false;
+                if (activationCallback != null) {
+                    activationCallback.onBluetoothActivationRejected();
+                }
+            }
+        } else if (requestCode == ENABLE_STORAGE_PERMISSION_CODE) {
+            // continue activation if permission enabled
+            if (grantResults.length > 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (DEBUG) Log.d(DEBUG_TAG, "Storage permissions granted.");
+                activateBluetooth(BluetoothCheckActivity.this.activationCallback);
+            } else {
+                if (DEBUG) Log.e(DEBUG_TAG, "Storage permissions not granted.");
                 pendingActivation = false;
                 if (activationCallback != null) {
                     activationCallback.onBluetoothActivationRejected();

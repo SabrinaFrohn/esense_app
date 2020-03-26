@@ -54,11 +54,14 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     private TextView samplingRateLabel;
     private TextView notifPeriodLabel;
 
-    // Format for label
-
-
     // eSense controller
     ESenseController eSenseController = new ESenseController();
+
+    // Logger (null is not logging)
+    SimpleLogger logger;
+
+    // Flag for pending log (after config read and start sensor)
+    private boolean pendingStartLog = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +112,11 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 @Override
                 public void onClick(View v) {
                     if (eSenseController.getState() != ESenseConnectionState.DISCONNECTED) {
-                        eSenseController.disconnect();
+                        if (logger != null) {
+                            // TODO dialog to confirm stop log
+                        } else {
+                            eSenseController.disconnect();
+                        }
                     }
                 }
             });
@@ -134,7 +141,25 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
             startRecordButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO
+                    if (logger != null) {
+                        // Ignore when already logging
+                        return;
+                    }
+                    if (eSenseController.getState() == ESenseConnectionState.CONNECTED ){
+                        // Check config
+                        if (eSenseController.getESenseConfig() == null) {
+                            pendingStartLog = true;
+                            eSenseController.readESenseConfig();
+                        } else if (!eSenseController.areSensorNotificationsActive()) {
+                            if (!eSenseController.startSensorNotifications(4)) {
+                                showToast(getString(R.string.toast_message_start_sensor_failed));
+                                return;
+                            }
+                        }
+                        startLog();
+                    } else {
+                        showToast(getString(R.string.toast_message_no_device_connected));
+                    }
                 }
             });
         }
@@ -157,7 +182,13 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 @Override
                 public void onClick(View v) {
                     if (eSenseController.getState() == ESenseConnectionState.CONNECTED ){
-                        eSenseController.startSensorNotifications(4); // four readings per second
+                        if (eSenseController.areSensorNotificationsActive()) {
+                            // Ignore when already started
+                            return;
+                        }
+                        if (!eSenseController.startSensorNotifications(4)) {
+                            showToast(getString(R.string.toast_message_start_sensor_failed));
+                        }
                     }
                 }
             });
@@ -170,11 +201,26 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 @Override
                 public void onClick(View v) {
                     if (eSenseController.getState() == ESenseConnectionState.CONNECTED ){
-                        eSenseController.stopSensorNotifications();
+                        if (!eSenseController.areSensorNotificationsActive()) {
+                            // Ignore when already stopped
+                            return;
+                        }
+                        if (logger != null) {
+                            // TODO dialog to confirm stop log
+                        } else {
+                            eSenseController.stopSensorNotifications();
+                        }
                     }
                 }
             });
         }
+    }
+
+    /**
+     * Starts the log of sensor events.
+     */
+    private void startLog() {
+        // TODO
     }
 
     @Override
@@ -189,6 +235,12 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         super.onPause();
         eSenseController.removeListener(this);
         if (isFinishing()) {
+            // Stop log
+            if (logger != null) {
+                // TODO log close event
+                logger.closeLog(this);
+                logger = null;
+            }
             // Disconnect
             eSenseController.disconnect();
         }
@@ -444,6 +496,13 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onDisconnected(ESenseManager manager) {
+        // Stop log
+        if (logger != null) {
+            // TODO log disconnection event
+            logger.closeLog(this);
+            logger = null;
+        }
+        // Toast and UI update
         showToast(getString(R.string.toast_message_device_disconnected));
         updateUI();
     }
@@ -455,6 +514,10 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onButtonEventChanged(boolean pressed) {
+        // Log event
+        if (logger != null) {
+            // TODO log button event
+        }
         showToast(getString(R.string.toast_message_esense_button_pressed));
     }
 
@@ -474,6 +537,10 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     @Override
     public void onSensorConfigRead(ESenseConfig config) {
         updateIMUConfigurationPanel();
+        if (pendingStartLog) {
+            pendingStartLog = false;
+            startLog();
+        }
     }
 
     @Override
@@ -483,6 +550,10 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onSensorChanged(ESenseEvent evt) {
+        // Log sensor data
+        if (logger != null) {
+            // TODO
+        }
         updateSensorDataPanel();
     }
 
@@ -498,6 +569,13 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onSensorNotificationsStopped() {
+        // Stop log
+        if (logger != null) {
+            // TODO log stop sensor notification
+            logger.closeLog(this);
+            logger = null;
+        }
+        updateLoggerPanel();
         updateSensorDataPanel();
     }
 }

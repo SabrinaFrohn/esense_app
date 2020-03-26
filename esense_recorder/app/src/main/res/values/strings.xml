@@ -63,6 +63,8 @@
     <string name="toast_message_device_name_error">No device selected for the connection!</string>
     <string name="toast_message_esense_button_pressed">eSense button pressed.</string>
     <string name="toast_message_read_config_failed">Read sensor config failed!</string>
+    <string name="toast_message_no_device_connected">No device connected!</string>
+    <string name="toast_message_start_sensor_failed">Failed to start sensor notifications!</string>
 
     <string name="dialog_bt_not_supported_message">Bluetooth low-energy is required.</string>
     <string name="dialog_bt_not_supported_ok">Cancel</string>
