@@ -812,9 +812,14 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         if (logger != null && logger.isLogging()) {
             long elapsedMillis = (System.nanoTime()-startLogNanoTime)/1000000;
             String elapsed = String.format(Locale.getDefault(), "%d", elapsedMillis);
-            logger.log(this, logSeparator, logTerminator,
+            if (!logger.log(this, logSeparator, logTerminator,
                     elapsed,
-                    getString(R.string.log_button_event_message));
+                    getString(R.string.log_button_event_message))) {
+                // Log failed
+                logger.closeLog(this);
+                logger = null;
+                showToast(getString(R.string.toast_log_failed));
+            }
         }
         showToast(getString(R.string.toast_message_esense_button_pressed));
     }
@@ -858,7 +863,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 convAcc = evt.convertAccToG(config);
                 convGyro = evt.convertGyroToDegPerSecond(config);
             }
-            logger.log(this, logSeparator, logTerminator,
+            if (!logger.log(this, logSeparator, logTerminator,
                     elapsed,
                     getString(R.string.log_sensor_event_message),
                     evt.getAccel()[0], evt.getAccel()[1], evt.getAccel()[2],
@@ -869,7 +874,12 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                     (convGyro==null)?("-"):(convGyro[0]),
                     (convGyro==null)?("-"):(convGyro[1]),
                     (convGyro==null)?("-"):(convGyro[2])
-                    );
+                    )) {
+                // Log failed
+                logger.closeLog(this);
+                logger = null;
+                showToast(getString(R.string.toast_log_failed));
+            }
         }
         // No UI update. This is made in separate handler.
     }

@@ -83,6 +83,7 @@
     <string name="toast_message_start_sensor_failed">Failed to start sensor notifications!</string>
     <string name="toast_sampling_rate_out_of_bounds">Invalid sampling rate value!</string>
     <string name="toast_sampling_rate_illegal">Invalid sampling rate value!</string>
+    <string name="toast_log_failed">Log failed!</string>
 
     <string name="dialog_bt_not_supported_message">Bluetooth low-energy is required.</string>
     <string name="dialog_bt_not_supported_ok">Cancel</string>
