@@ -313,6 +313,30 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 getString(R.string.log_start_date_pattern), Locale.getDefault());
         String date = dateFormat.format(new Date());
+        // TODO add configuration details
+        ESenseConfig config = eSenseController.getESenseConfig();
+        if (config != null) {
+            logger.log(this, logSeparator, logTerminator,
+                    "0",
+                    "acc. range",
+                    config.getAccRange().toString()
+                    );
+            logger.log(this, logSeparator, logTerminator,
+                    "0",
+                    "gyro. range",
+                    config.getGyroRange().toString()
+            );
+            logger.log(this, logSeparator, logTerminator,
+                    "0",
+                    "acc. LPF",
+                    config.getAccLPF().toString()
+            );
+            logger.log(this, logSeparator, logTerminator,
+                    "0",
+                    "gyro. LPF",
+                    config.getGyroLPF().toString()
+            );
+        }
         if (!logger.log(this, logSeparator, logTerminator,
                 "0",
                 getString(R.string.log_start_message),
@@ -907,6 +931,9 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     @Override
     public void onSensorNotificationsStarted(int samplingRate) {
+        if(pendingStartLog){
+            startLog();
+        }
         updateSensorDataPanel();
     }
 

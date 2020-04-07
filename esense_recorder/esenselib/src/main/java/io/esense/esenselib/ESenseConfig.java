@@ -1,33 +1,120 @@
 package io.esense.esenselib;
 
+import androidx.annotation.NonNull;
+
 public class ESenseConfig {
 
     /**
      * Gyroscope full scale range in +-degrees/second
      */
     public enum GyroRange {
-        DEG_250, DEG_500, DEG_1000, DEG_2000
+        DEG_250, DEG_500, DEG_1000, DEG_2000;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this){
+
+                case DEG_250:
+                    return "250";
+                case DEG_500:
+                    return "500";
+                case DEG_1000:
+                    return "1000";
+                case DEG_2000:
+                    return "2000";
+            }
+            return "";
+        }
     }
 
     /**
      * Accelerometer full scale range in +-g
      */
     public enum AccRange {
-        G_2, G_4, G_8, G_16
+        G_2, G_4, G_8, G_16;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this){
+
+                case G_2:
+                    return "2";
+                case G_4:
+                    return "4";
+                case G_8:
+                    return "8";
+                case G_16:
+                    return "16";
+            }
+            return "";
+        }
     }
 
     /**
      * Gyroscope low pass filter configuration. Each value except DISABLED represents the bandwidth of the filter in Hz.
      */
     public enum GyroLPF {
-        BW_250, BW_184, BW_92, BW_41, BW_20, BW_10, BW_5, BW_3600, DISABLED
+        BW_250, BW_184, BW_92, BW_41, BW_20, BW_10, BW_5, BW_3600, DISABLED;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this){
+
+                case BW_250:
+                    return "250";
+                case BW_184:
+                    return "184";
+                case BW_92:
+                    return "92";
+                case BW_41:
+                    return "41";
+                case BW_20:
+                    return "20";
+                case BW_10:
+                    return "10";
+                case BW_5:
+                    return "5";
+                case BW_3600:
+                    return "3600";
+                case DISABLED:
+                    return "disabled";
+            }
+            return "";
+        }
     }
 
     /**
      * Accelerometer low pass filter configuration. Each value except DISABLED represents the bandwidth of the filter in Hz.
      */
     public enum AccLPF {
-        BW_460, BW_184, BW_92, BW_41, BW_20, BW_10, BW_5, DISABLED
+        BW_460, BW_184, BW_92, BW_41, BW_20, BW_10, BW_5, DISABLED;
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this){
+
+                case BW_460:
+                    return "460";
+                case BW_184:
+                    return "184";
+                case BW_92:
+                    return "92";
+                case BW_41:
+                    return "41";
+                case BW_20:
+                    return "20";
+                case BW_10:
+                    return "10";
+                case BW_5:
+                    return "5";
+                case DISABLED:
+                    return "disabled";
+            }
+            return "";
+        }
     }
 
     private GyroRange gyroRange;
