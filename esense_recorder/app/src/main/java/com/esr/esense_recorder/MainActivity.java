@@ -300,14 +300,29 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
      */
     private void startLog() {
         pendingStartLog = false;
+        if (logger != null && logger.isLogging()) {
+            logger.closeLog(this);
+        }
+        // Create logger
+        String folderName = getString(R.string.log_folder);
+        SimpleDateFormat logFileFormat = new SimpleDateFormat(
+                getString(R.string.log_file_date_pattern), Locale.getDefault());
+        logger = new SimpleLogger(folderName, logFileFormat.format(new Date()));
+        // First log
         startLogNanoTime = System.nanoTime();
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 getString(R.string.log_start_date_pattern), Locale.getDefault());
         String date = dateFormat.format(new Date());
-        logger.log(this, logSeparator, logTerminator,
+        if (!logger.log(this, logSeparator, logTerminator,
                 "0",
                 getString(R.string.log_start_message),
-                date);
+                date)) {
+            // Log failed
+            logger.closeLog(this);
+            logger = null;
+            showToast(getString(R.string.toast_log_failed));
+        }
+        updateLoggerPanel();
     }
 
     /**
@@ -879,6 +894,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 logger.closeLog(this);
                 logger = null;
                 showToast(getString(R.string.toast_log_failed));
+                updateLoggerPanel();
             }
         }
         // No UI update. This is made in separate handler.

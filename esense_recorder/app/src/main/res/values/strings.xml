@@ -58,6 +58,8 @@
     <string name="conv_acc_data_decimal_format">0.00</string>
     <string name="conv_gyro_data_decimal_format">0.00</string>
 
+    <string name="log_folder">ESense-Recorder-Logs</string>
+    <string name="log_file_date_pattern">yyyyMMdd\'-\'HHmmss\'_ESense-log\'</string>
     <string name="log_field_separator">\t</string>
     <string name="log_line_terminator">\n</string>
     <string name="log_start_date_pattern">yyyy-MM-dd HH:mm:ss.SSS</string>
