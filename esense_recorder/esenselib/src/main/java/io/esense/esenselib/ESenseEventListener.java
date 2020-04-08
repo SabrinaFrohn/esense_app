@@ -35,6 +35,12 @@ public interface ESenseEventListener {
     void onSensorConfigRead(ESenseConfig config);
 
     /**
+     * Called when the sensor configuration has been changed successfully.
+     * @param config the new configuration.
+     */
+    void onSensorConfigChanged(ESenseConfig config);
+
+    /**
      * Called when the information on accelerometer offset has been received
      * @param offsetX x-axis factory offset
      * @param offsetY y-axis factory offset

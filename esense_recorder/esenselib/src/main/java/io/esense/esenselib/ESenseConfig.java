@@ -14,11 +14,10 @@ public class ESenseConfig {
         @Override
         public String toString() {
             switch (this){
-
                 case DEG_250:
                     return "250";
                 case DEG_500:
-                    return "500";
+                    return "500 (default)";
                 case DEG_1000:
                     return "1000";
                 case DEG_2000:
@@ -38,11 +37,10 @@ public class ESenseConfig {
         @Override
         public String toString() {
             switch (this){
-
                 case G_2:
                     return "2";
                 case G_4:
-                    return "4";
+                    return "4 (default)";
                 case G_8:
                     return "8";
                 case G_16:
@@ -62,7 +60,6 @@ public class ESenseConfig {
         @Override
         public String toString() {
             switch (this){
-
                 case BW_250:
                     return "250";
                 case BW_184:
@@ -76,7 +73,7 @@ public class ESenseConfig {
                 case BW_10:
                     return "10";
                 case BW_5:
-                    return "5";
+                    return "5 (default)";
                 case BW_3600:
                     return "3600";
                 case DISABLED:
@@ -95,7 +92,6 @@ public class ESenseConfig {
         @Override
         public String toString() {
             switch (this){
-
                 case BW_460:
                     return "460";
                 case BW_184:
@@ -109,7 +105,7 @@ public class ESenseConfig {
                 case BW_10:
                     return "10";
                 case BW_5:
-                    return "5";
+                    return "5 (default)";
                 case DISABLED:
                     return "disabled";
             }

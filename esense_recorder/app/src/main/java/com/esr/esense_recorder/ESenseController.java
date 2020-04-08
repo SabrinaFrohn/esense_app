@@ -100,6 +100,20 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
     }
 
     /**
+     * Sets the sensor configuration. Listeners are informed asynchronously of the change via
+     * <code>onSensorConfigChanged</code>.
+     *
+     * @param config The configuration to set.
+     * @return <code>true</code> if the sensor config has been set.
+     */
+    public boolean setESenseConfig(ESenseConfig config) {
+        if (eSenseManager != null && state == ESenseConnectionState.CONNECTED) {
+            return eSenseManager.setSensorConfig(config);
+        }
+        return false;
+    }
+
+    /**
      * Returns the last known eSense configuration.
      *
      * @return the last known eSense configuration.
@@ -427,6 +441,23 @@ public class ESenseController implements ESenseConnectionListener, ESenseEventLi
         }
         for (ESenseListener l: targets) {
             l.onSensorConfigRead(config);
+        }
+    }
+
+    @Override
+    public void onSensorConfigChanged(ESenseConfig config) {
+        // Store data
+        eSenseConfig = config;
+        // Inform listeners
+        ArrayList<ESenseListener> targets;
+        synchronized (this) {
+            if (listeners.isEmpty()) {
+                return;
+            }
+            targets = new ArrayList<>(listeners);
+        }
+        for (ESenseListener l: targets) {
+            l.onSensorConfigChanged(config);
         }
     }
 

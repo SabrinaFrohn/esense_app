@@ -204,13 +204,18 @@
                         android:layout_weight="1"
                         android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="@color/colorHeading" />
-                    <TextView
-                        android:id="@+id/activity_main_gyro_range_label"
+                    <Button
+                        android:id="@+id/activity_main_gyro_range_button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="@color/colorLabel" />
+                        android:layout_weight="1" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/activity_main_gyro_range_label"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:textAppearance="@android:style/TextAppearance.Medium"-->
+<!--                        android:textColor="@color/colorLabel" />-->
                 </LinearLayout>
 
                 <!-- Gyroscope LPF -->
@@ -226,13 +231,18 @@
                         android:layout_weight="1"
                         android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="@color/colorHeading" />
-                    <TextView
-                        android:id="@+id/activity_main_gyro_lpf_label"
+                    <Button
+                        android:id="@+id/activity_main_gyro_lpf_button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="@color/colorLabel" />
+                        android:layout_weight="1" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/activity_main_gyro_lpf_label"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:textAppearance="@android:style/TextAppearance.Medium"-->
+<!--                        android:textColor="@color/colorLabel" />-->
                 </LinearLayout>
 
                 <!-- Accelerometer range -->
@@ -248,13 +258,18 @@
                         android:layout_weight="1"
                         android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="@color/colorHeading" />
-                    <TextView
-                        android:id="@+id/activity_main_acc_range_label"
+                    <Button
+                        android:id="@+id/activity_main_acc_range_button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="@color/colorLabel" />
+                        android:layout_weight="1" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/activity_main_acc_range_label"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:textAppearance="@android:style/TextAppearance.Medium"-->
+<!--                        android:textColor="@color/colorLabel" />-->
                 </LinearLayout>
 
                 <!-- Accelerometer LPF -->
@@ -270,13 +285,18 @@
                         android:layout_weight="1"
                         android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColor="@color/colorHeading" />
-                    <TextView
-                        android:id="@+id/activity_main_acc_lpf_label"
+                    <Button
+                        android:id="@+id/activity_main_acc_lpf_button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textColor="@color/colorLabel" />
+                        android:layout_weight="1" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/activity_main_acc_lpf_label"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:textAppearance="@android:style/TextAppearance.Medium"-->
+<!--                        android:textColor="@color/colorLabel" />-->
                 </LinearLayout>
 
                 <!-- Separator -->

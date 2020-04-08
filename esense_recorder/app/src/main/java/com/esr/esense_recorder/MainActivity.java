@@ -37,10 +37,10 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
 
     // UI components
     private TextView connectionStateLabel;
-    private TextView gyroRangeLabel;
-    private TextView gyroLPFLabel;
-    private TextView accRangeLabel;
-    private TextView accLPFLabel;
+    private Button gyroRangeButton;
+    private Button gyroLPFButton;
+    private Button accRangeButton;
+    private Button accLPFButton;
     private Button connectButton;
     private Button disconnectButton;
     private Button readConfigButton;
@@ -97,10 +97,6 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         // References to UI components
         connectionStateLabel = findViewById(R.id.activity_main_connection_state_label);
         recordStateLabel = findViewById(R.id.activity_main_record_state_label);
-        gyroRangeLabel = findViewById(R.id.activity_main_gyro_range_label);
-        gyroLPFLabel = findViewById(R.id.activity_main_gyro_lpf_label);
-        accRangeLabel = findViewById(R.id.activity_main_acc_range_label);
-        accLPFLabel = findViewById(R.id.activity_main_acc_lpf_label);
         rawAccXLabel = findViewById(R.id.activity_main_raw_acc_x_label);
         rawAccYLabel = findViewById(R.id.activity_main_raw_acc_y_label);
         rawAccZLabel = findViewById(R.id.activity_main_raw_acc_z_label);
@@ -189,6 +185,199 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                     if (eSenseController.getState() == ESenseConnectionState.CONNECTED) {
                         eSenseController.readESenseConfig();
                     }
+                }
+            });
+        }
+
+        // Gyro range button
+        gyroRangeButton = findViewById(R.id.activity_main_gyro_range_button);
+        if (gyroRangeButton != null) {
+            gyroRangeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // List of items
+                    final ESenseConfig.GyroRange[] items = ESenseConfig.GyroRange.values();
+                    String[] itemsLabel = new String[items.length];
+                    for (int i=0; i<items.length; i++) {
+                        itemsLabel[i] = items[i].toString();
+                    }
+                    // Create dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.dialog_gyro_range_title);
+                    builder.setItems(itemsLabel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Request configuration change
+                            try {
+                                ESenseConfig currentConfig = eSenseController.getESenseConfig();
+                                ESenseConfig newConfig = new ESenseConfig(
+                                        currentConfig.getAccRange(),
+                                        items[which],
+                                        currentConfig.getAccLPF(),
+                                        currentConfig.getGyroLPF()
+                                );
+                                if (!eSenseController.setESenseConfig(newConfig)) {
+                                    showToast(getString(R.string.toast_message_gyro_range_failed));
+                                }
+                            } catch (Exception e) {
+                                showToast(getString(R.string.toast_message_gyro_range_failed));
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(R.string.dialog_cancel_button_text,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Cancel
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }
+
+        // Gyro LFP
+        gyroLPFButton = findViewById(R.id.activity_main_gyro_lpf_button);
+        if (gyroLPFButton != null) {
+            gyroLPFButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // List of items
+                    final ESenseConfig.GyroLPF[] items = ESenseConfig.GyroLPF.values();
+                    String[] itemsLabel = new String[items.length];
+                    for (int i=0; i<items.length; i++) {
+                        itemsLabel[i] = items[i].toString();
+                    }
+                    // Create dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.dialog_gyro_lpf_title);
+                    builder.setItems(itemsLabel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Request configuration change
+                            try {
+                                ESenseConfig currentConfig = eSenseController.getESenseConfig();
+                                ESenseConfig newConfig = new ESenseConfig(
+                                        currentConfig.getAccRange(),
+                                        currentConfig.getGyroRange(),
+                                        currentConfig.getAccLPF(),
+                                        items[which]
+                                );
+                                if (!eSenseController.setESenseConfig(newConfig)) {
+                                    showToast(getString(R.string.toast_message_gyro_lpf_failed));
+                                }
+                            } catch (Exception e) {
+                                showToast(getString(R.string.toast_message_gyro_lpf_failed));
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(R.string.dialog_cancel_button_text,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Cancel
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }
+
+        // Acc range
+        accRangeButton = findViewById(R.id.activity_main_acc_range_button);
+        if (accRangeButton != null) {
+            accRangeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // List of items
+                    final ESenseConfig.AccRange[] items = ESenseConfig.AccRange.values();
+                    String[] itemsLabel = new String[items.length];
+                    for (int i=0; i<items.length; i++) {
+                        itemsLabel[i] = items[i].toString();
+                    }
+                    // Create dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.dialog_acc_range_title);
+                    builder.setItems(itemsLabel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Request configuration change
+                            try {
+                                ESenseConfig currentConfig = eSenseController.getESenseConfig();
+                                ESenseConfig newConfig = new ESenseConfig(
+                                        items[which],
+                                        currentConfig.getGyroRange(),
+                                        currentConfig.getAccLPF(),
+                                        currentConfig.getGyroLPF()
+                                );
+                                if (!eSenseController.setESenseConfig(newConfig)) {
+                                    showToast(getString(R.string.toast_message_acc_range_failed));
+                                }
+                            } catch (Exception e) {
+                                showToast(getString(R.string.toast_message_acc_range_failed));
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(R.string.dialog_cancel_button_text,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Cancel
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }
+
+
+        // Acc LPF
+        accLPFButton = findViewById(R.id.activity_main_acc_lpf_button);
+        if (accLPFButton != null) {
+            accLPFButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // List of items
+                    final ESenseConfig.AccLPF[] items = ESenseConfig.AccLPF.values();
+                    String[] itemsLabel = new String[items.length];
+                    for (int i=0; i<items.length; i++) {
+                        itemsLabel[i] = items[i].toString();
+                    }
+                    // Create dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.dialog_acc_lpf_title);
+                    builder.setItems(itemsLabel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Request configuration change
+                            try {
+                                ESenseConfig currentConfig = eSenseController.getESenseConfig();
+                                ESenseConfig newConfig = new ESenseConfig(
+                                        currentConfig.getAccRange(),
+                                        currentConfig.getGyroRange(),
+                                        items[which],
+                                        currentConfig.getGyroLPF()
+                                );
+                                if (!eSenseController.setESenseConfig(newConfig)) {
+                                    showToast(getString(R.string.toast_message_acc_lpf_failed));
+                                }
+                            } catch (Exception e) {
+                                showToast(getString(R.string.toast_message_acc_lpf_failed));
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(R.string.dialog_cancel_button_text,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Cancel
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
             });
         }
@@ -556,8 +745,8 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (gyroRangeLabel == null || gyroLPFLabel == null ||
-                        accRangeLabel == null || accLPFLabel == null) {
+                if (gyroRangeButton == null || gyroLPFButton == null ||
+                        accRangeButton == null || accLPFButton == null) {
                     return;
                 }
                 // Set button state
@@ -572,92 +761,100 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                 ESenseConfig config = eSenseController.getESenseConfig();
                 if (config == null ||
                         eSenseController.getState() != ESenseConnectionState.CONNECTED) {
-                    gyroRangeLabel.setText(getString(R.string.unknown_value_text));
-                    gyroLPFLabel.setText(getString(R.string.unknown_value_text));
-                    accRangeLabel.setText(getString(R.string.unknown_value_text));
-                    accLPFLabel.setText(getString(R.string.unknown_value_text));
+                    gyroRangeButton.setText(getString(R.string.unknown_value_text));
+                    gyroLPFButton.setText(getString(R.string.unknown_value_text));
+                    accRangeButton.setText(getString(R.string.unknown_value_text));
+                    accLPFButton.setText(getString(R.string.unknown_value_text));
+                    gyroRangeButton.setEnabled(false);
+                    gyroLPFButton.setEnabled(false);
+                    accRangeButton.setEnabled(false);
+                    accLPFButton.setEnabled(false);
                 } else {
+                    gyroRangeButton.setEnabled(true);
+                    gyroLPFButton.setEnabled(true);
+                    accRangeButton.setEnabled(true);
+                    accLPFButton.setEnabled(true);
                     switch (config.getGyroRange()) {
                         case DEG_250:
-                            gyroRangeLabel.setText(getString(R.string.gyro_range_250));
+                            gyroRangeButton.setText(getString(R.string.gyro_range_250));
                             break;
                         case DEG_500:
-                            gyroRangeLabel.setText(getString(R.string.gyro_range_500));
+                            gyroRangeButton.setText(getString(R.string.gyro_range_500));
                             break;
                         case DEG_1000:
-                            gyroRangeLabel.setText(getString(R.string.gyro_range_1000));
+                            gyroRangeButton.setText(getString(R.string.gyro_range_1000));
                             break;
                         case DEG_2000:
-                            gyroRangeLabel.setText(getString(R.string.gyro_range_2000));
+                            gyroRangeButton.setText(getString(R.string.gyro_range_2000));
                             break;
                     }
                     switch (config.getGyroLPF()) {
                         case BW_250:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_250));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_250));
                             break;
                         case BW_184:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_184));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_184));
                             break;
                         case BW_92:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_92));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_92));
                             break;
                         case BW_41:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_41));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_41));
                             break;
                         case BW_20:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_20));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_20));
                             break;
                         case BW_10:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_10));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_10));
                             break;
                         case BW_5:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_5));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_5));
                             break;
                         case BW_3600:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_3600));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_3600));
                             break;
                         case DISABLED:
-                            gyroLPFLabel.setText(getString(R.string.gyro_lpf_disabled));
+                            gyroLPFButton.setText(getString(R.string.gyro_lpf_disabled));
                             break;
                     }
                     switch (config.getAccRange()) {
                         case G_2:
-                            accRangeLabel.setText(getString(R.string.acc_range_2G));
+                            accRangeButton.setText(getString(R.string.acc_range_2G));
                             break;
                         case G_4:
-                            accRangeLabel.setText(getString(R.string.acc_range_4G));
+                            accRangeButton.setText(getString(R.string.acc_range_4G));
                             break;
                         case G_8:
-                            accRangeLabel.setText(getString(R.string.acc_range_8G));
+                            accRangeButton.setText(getString(R.string.acc_range_8G));
                             break;
                         case G_16:
-                            accRangeLabel.setText(getString(R.string.acc_range_16G));
+                            accRangeButton.setText(getString(R.string.acc_range_16G));
                             break;
                     }
                     switch (config.getAccLPF()) {
                         case BW_460:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_460));
+                            accLPFButton.setText(getString(R.string.acc_lpf_460));
                             break;
                         case BW_184:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_184));
+                            accLPFButton.setText(getString(R.string.acc_lpf_184));
                             break;
                         case BW_92:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_92));
+                            accLPFButton.setText(getString(R.string.acc_lpf_92));
                             break;
                         case BW_41:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_41));
+                            accLPFButton.setText(getString(R.string.acc_lpf_41));
                             break;
                         case BW_20:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_20));
+                            accLPFButton.setText(getString(R.string.acc_lpf_20));
                             break;
                         case BW_10:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_10));
+                            accLPFButton.setText(getString(R.string.acc_lpf_10));
                             break;
                         case BW_5:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_5));
+                            accLPFButton.setText(getString(R.string.acc_lpf_5));
                             break;
                         case DISABLED:
-                            accLPFLabel.setText(getString(R.string.acc_lpf_disabled));
+                            accLPFButton.setText(getString(R.string.acc_lpf_disabled));
                             break;
                     }
                 }
@@ -879,9 +1076,14 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     @Override
     public void onSensorConfigRead(ESenseConfig config) {
         updateIMUConfigurationPanel();
-        if (pendingStartLog) {
+        if (pendingStartLog && config != null) {
             startSensors();
         }
+    }
+
+    @Override
+    public void onSensorConfigChanged(ESenseConfig config) {
+        updateIMUConfigurationPanel();
     }
 
     @Override

@@ -86,6 +86,10 @@
     <string name="toast_sampling_rate_out_of_bounds">Invalid sampling rate value!</string>
     <string name="toast_sampling_rate_illegal">Invalid sampling rate value!</string>
     <string name="toast_log_failed">Log failed!</string>
+    <string name="toast_message_gyro_range_failed">Unable to change gyro range!</string>
+    <string name="toast_message_gyro_lpf_failed">Unable to change gyro LPF!</string>
+    <string name="toast_message_acc_range_failed">Unable to change acc range!</string>
+    <string name="toast_message_acc_lpf_failed">Unable to change acc LPF!</string>
 
     <string name="dialog_bt_not_supported_message">Bluetooth low-energy is required.</string>
     <string name="dialog_bt_not_supported_ok">Cancel</string>
@@ -100,5 +104,11 @@
     <string name="dialog_sampling_rate_title">Enter the sampling rate: [1–100] Hz</string>
     <string name="dialog_sampling_rate_ok_button">OK</string>
     <string name="dialog_sampling_rate_cancel_button">Cancel</string>
+    <string name="dialog_cancel_button_text">Cancel</string>
+    <string name="dialog_gyro_range_title">Range for gyroscope</string>
+    <string name="dialog_gyro_lpf_title">LPF for gyroscope</string>
+    <string name="dialog_acc_range_title">Range for accelerometer</string>
+    <string name="dialog_acc_lpf_title">LPF for accelerometer</string>
+
 
 </resources>

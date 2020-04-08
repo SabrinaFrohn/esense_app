@@ -557,6 +557,15 @@ public class ESenseManager {
                         // Update the internal name if the write operation was successful
                         mDeviceName = deviceName.toString();
                         break;
+                    case SENSOR_CONFIG_CHARACTERISTIC:
+                        if (mEventListener != null) {
+                            byte[] bytes = c.getValue();
+                            if (checkCheckSum(bytes, 1)) {
+                                ESenseConfig config = new ESenseConfig(bytes);
+                                mEventListener.onSensorConfigChanged(config);
+                            }
+                        }
+                        break;
                 }
             }
         }
