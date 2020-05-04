@@ -87,7 +87,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
     private boolean pendingStartLog = false;
 
     private String LAST_SAMPLING_RATE_KEY = "LAST_SAMPLING_RATE_KEY";
-    private int lastSamplingRate = 4;
+    private int lastSamplingRate = 25;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -502,9 +502,14 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 getString(R.string.log_start_date_pattern), Locale.getDefault());
         String date = dateFormat.format(new Date());
-        // TODO add configuration details
+        // configuration details
         ESenseConfig config = eSenseController.getESenseConfig();
         if (config != null) {
+            logger.log(this, logSeparator, logTerminator,
+                    "0",
+                    "sampling rate",
+                    lastSamplingRate
+            );
             logger.log(this, logSeparator, logTerminator,
                     "0",
                     "acc. range",
@@ -568,6 +573,7 @@ public class MainActivity extends BluetoothCheckActivity implements BluetoothChe
                                 pendingStartLog = false;
                             } else {
                                 // Save value
+                                lastSamplingRate = rate;
                                 SharedPreferences prefs = PreferenceManager
                                         .getDefaultSharedPreferences(MainActivity.this);
                                 prefs.edit().putInt(LAST_SAMPLING_RATE_KEY, lastSamplingRate)

@@ -17,7 +17,7 @@ public class ESenseConfig {
                 case DEG_250:
                     return "250";
                 case DEG_500:
-                    return "500 (default)";
+                    return "500"; // default
                 case DEG_1000:
                     return "1000";
                 case DEG_2000:
@@ -40,7 +40,7 @@ public class ESenseConfig {
                 case G_2:
                     return "2";
                 case G_4:
-                    return "4 (default)";
+                    return "4"; // default
                 case G_8:
                     return "8";
                 case G_16:
@@ -71,9 +71,9 @@ public class ESenseConfig {
                 case BW_20:
                     return "20";
                 case BW_10:
-                    return "10";
+                    return "10"; // default
                 case BW_5:
-                    return "5 (default)";
+                    return "5";
                 case BW_3600:
                     return "3600";
                 case DISABLED:
@@ -103,9 +103,9 @@ public class ESenseConfig {
                 case BW_20:
                     return "20";
                 case BW_10:
-                    return "10";
+                    return "10 (default)";
                 case BW_5:
-                    return "5 (default)";
+                    return "5";
                 case DISABLED:
                     return "disabled";
             }
@@ -147,11 +147,11 @@ public class ESenseConfig {
      * Constructs a default configuration object
      * Acc range = +-4g
      * Gyro range = +-1000deg/s
-     * Acc LPF = bandwith 5Hz
-     * Gyro LPf = bandwith 5Hz
+     * Acc LPF = bandwith 10Hz
+     * Gyro LPf = bandwith 10Hz
      */
     public ESenseConfig(){
-        this(AccRange.G_4, GyroRange.DEG_1000, AccLPF.BW_5, GyroLPF.BW_5);
+        this(AccRange.G_4, GyroRange.DEG_1000, AccLPF.BW_10, GyroLPF.BW_10);
     }
 
     /**
